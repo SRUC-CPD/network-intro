@@ -13,6 +13,8 @@ df = read_csv("~/repo/network-intro/data/dummy_data.csv")
 
 pal = brewer.pal(5, "Dark2")
 
+# spurious comment
+
 
 # ---------------------------
 # Make 2 vertice type graph
