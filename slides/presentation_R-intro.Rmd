@@ -1,0 +1,43 @@
+---
+title: "Intro to R"
+author: "Mike Spencer"
+date: "10 March 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is R and why use it?
+
+- Statistical programming language
+- Used around the world
+- Open source
+- Excellent support (e.g.)
+    - <https://stackoverflow.com/questions/tagged/r>
+    - <https://community.rstudio.com/>
+- Online courses
+    - <https://www.datacamp.com/courses/tech:r>
+    - <https://www.coursera.org/specializations/jhu-data-science>
+
+
+## The R interface
+
+
+## Packages
+
+- First rule of programming
+    - has someone else done it already?
+- Packages are add ons to increase functionality
+- Today we'll use
+    - tidyverse: <https://www.tidyverse.org/>
+    - igraph: <http://igraph.org/r/>
+
+
+## R signposts
+
+- `function()` Anything with brackets is a function, like a spreadsheet
+- `%>%` A pipe can send output from a function to the next line
+- `<-` and `=` can generally be used 
+
