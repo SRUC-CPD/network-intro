@@ -2,7 +2,9 @@
 title: "Intro to R"
 author: "Mike Spencer"
 date: "10 March 2018"
-output: ioslides_presentation
+output:
+   ioslides_presentation:
+   logo: sruc.jpeg
 ---
 
 ```{r setup, include=FALSE}
