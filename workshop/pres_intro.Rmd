@@ -1,0 +1,50 @@
+---
+title: "Network Analysis in R"
+author: "Dr Mike Spencer, Mr Josh Bird & Dr Elliot Meador"
+date: "23 March 2018"
+output: ioslides_presentation
+incremental: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(png)
+```
+## Networks: History & Terminology 
+In this section we will discuss 
+ 
+ 1. A, very brief, history of network analysis in academic literature
+    + Grannovetter (1978)
+         . . . *forbidden tryads*
+ 
+ 2. Key terminology needed in discussing network attributes. 
+    + Measures of centrality
+        - Degree
+        - Betweeness
+        - Closeness
+        
+## History
+Social networks have been a prominent part of sociological theory since the very beginning.
+
+!['Karl Marx'](marx_1.png)!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+        
+        
