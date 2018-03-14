@@ -1,0 +1,106 @@
+---
+title: "Data to a network visualisation"
+author: "Mike Spencer"
+date: "14 March 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Packages
+
+* Install only once
+* Load into session with `library()`
+
+```{r packages}
+# install.packages("tidyverse")
+# install.packages("igraph")
+
+library(tidyverse)
+#library(igraph)
+```
+
+
+## Reading data
+
+```{r reading data}
+# Reads and outputs to console
+read_csv("../data/SNA_anon_delegates.csv")
+
+# Reads and assigns to object df
+df = read_csv("../data/SNA_anon_delegates.csv")
+```
+
+
+## Selecting columns
+
+```{r select}
+# Data followed by columns we want
+select(df, name, affiliation, seniority, expertise)
+
+# Or data followed by columns we don't want
+select(df, -timestamp, -want_to_learn)
+```
+
+
+## Filter by row value
+
+```{r filter}
+# Single filter
+filter(df, affiliation=="Research - LEES")
+
+# Exclude
+filter(df, expertise!="R")
+
+# Multiple & or |
+filter(df, affiliation=="Research - LEES" & expertise=="R")
+
+# With a pipe
+df %>% 
+   select(-timestamp, -want_to_learn) %>% 
+   filter(affiliation=="Research - LEES" & expertise=="R")
+
+# With numbers
+# filter(df, col_num==10)
+# filter(df, col_num>10)
+# etc.
+```
+
+
+## Summaries
+
+```{r summaries}
+# Basic how many?
+count(df, expertise)
+
+# Ordered
+df %>% 
+   count(expertise) %>% 
+   arrange(n)
+
+# For more complex things
+df %>% 
+   group_by(seniority, expertise) %>% 
+   summarise(n=n()) %>% 
+   arrange(n)
+```
+
+
+## Plots
+
+```{r ggplot}
+ggplot(df, aes(affiliation)) +
+   geom_bar()
+
+ggplot(df, aes(affiliation)) +
+   geom_bar() +
+   coord_flip()
+
+ggplot(df, aes(affiliation)) +
+   geom_bar() +
+   coord_flip() +
+   facet_wrap(~ seniority)
+```
+

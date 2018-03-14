@@ -11,20 +11,36 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+
 ## What is R and why use it?
 
 - Statistical programming language
 - Used around the world
 - Open source
+    - Free as in beer
+    - Free as in speach
+
+
+## Help!
+
 - Excellent support (e.g.)
     - <https://stackoverflow.com/questions/tagged/r>
     - <https://community.rstudio.com/>
+    - <https://www.jumpingrivers.com/>
+    - <https://www.mango-solutions.com/>
 - Online courses
     - <https://www.datacamp.com/courses/tech:r>
     - <https://www.coursera.org/specializations/jhu-data-science>
 
 
 ## The R interface
+
+![](R_RStudio.png)
+
+
+## The R interface
+
+![](Screenshot_RStudio_small.png)
 
 
 ## Packages
@@ -42,4 +58,25 @@ knitr::opts_chunk$set(echo = FALSE)
 - `function()` Anything with brackets is a function, like a spreadsheet
 - `%>%` A pipe can send output from a function to the next line
 - `<-` and `=` can generally be used 
+- `?function` brings up help menu
+- `# this is a comment`
 
+
+## Tidyverse packages
+
+- `readr` for reading plain text files
+- `dplyr` for database type operations
+- `tidyr` for wide to long transformations
+- `ggplot2` for visualisation
+
+
+
+## Summarise
+
+- `count()`
+- `group_by() %>% summarise()`
+
+
+## Graphs
+
+- `ggplot(data, aes(x, y)`
