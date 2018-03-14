@@ -59,35 +59,16 @@ knitr::opts_chunk$set(echo = FALSE)
 - `%>%` A pipe can send output from a function to the next line
 - `<-` and `=` can generally be used 
 - `?function` brings up help menu
+- `# this is a comment`
 
 
-## Reading data
+## Tidyverse packages
 
-- *Where's my data?!*
-- `read_csv("file_name")`
-- `?read_csv`
-- `read_excel()`
-- assigned to:
-    - `x = read_csv()` or `x <- read_csv()`
-    - `read_csv() %>%`
+- `readr` for reading plain text files
+- `dplyr` for database type operations
+- `tidyr` for wide to long transformations
+- `ggplot2` for visualisation
 
-
-## Selecting columns
-
-- `select()`
-- `select(data, column1, column2)`
-- from a pipe:
-    - `read_csv() %>% select(column1, column2)`
-
-
-## Filtering by value
-
-- `filter()`
-- `filter(data, column1=="value")`
-- `filter(data, column1!="value")`
-- `filter(data, column2==10)`
-- `filter(data, column2>10)`
-- `filter(data, column1=="value" & column2>10)`
 
 
 ## Summarise
