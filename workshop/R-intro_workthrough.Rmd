@@ -9,6 +9,14 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Intro
+
+This document has been written in R and accompanies the live coding part of the network analysis workshop.
+In this document you'll see a mixture of code and output.
+Hopefully it'll be easy to tell these apart!
+To help, lines of output begin with `##`.
+
 ## Packages
 
 * Install only once
@@ -19,11 +27,13 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("igraph")
 
 library(tidyverse)
-#library(igraph)
+library(igraph)
 ```
 
 
 ## Reading data
+
+We can read data from local files, but as you'll have seen in the workshop we can also read files from a web address.
 
 ```{r reading data}
 # Reads and outputs to console
@@ -34,7 +44,24 @@ df = read_csv("../data/SNA_anon_delegates.csv")
 ```
 
 
+## Cleaning data
+
+This section prepares the dataset a little for exploratory analysis.
+It's worth noting here, that I've avoided tidying the `want_to_learn` columns at this point.
+
+```{r cleaning}
+# Shortening and removing spaces from column names
+colnames(df) = c("timestamp", "name", "affiliation", "seniority", "expertise", "want_to_learn")
+
+# Reducing the long other answers
+df$expertise[df$expertise=="Network analysis sofware like biolayout/Miru"] = "Biolayout"
+df$expertise[df$expertise=="Excel (advanced)"] = "MS/Libre/Open office"
+```
+
+
 ## Selecting columns
+
+Particularly if we're working with large datasets, it can be useful to pull out the columns we're interested in.
 
 ```{r select}
 # Data followed by columns we want
@@ -47,6 +74,9 @@ select(df, -timestamp, -want_to_learn)
 
 ## Filter by row value
 
+What if we're not interested in every observation?
+Maybe we only want to look at those respondents from Land Economy, or find those with expertise in R.
+
 ```{r filter}
 # Single filter
 filter(df, affiliation=="Research - LEES")
@@ -54,7 +84,7 @@ filter(df, affiliation=="Research - LEES")
 # Exclude
 filter(df, expertise!="R")
 
-# Multiple & or |
+# Multiple filters? use & (and) or | (or)
 filter(df, affiliation=="Research - LEES" & expertise=="R")
 
 # With a pipe
@@ -66,10 +96,18 @@ df %>%
 # filter(df, col_num==10)
 # filter(df, col_num>10)
 # etc.
+# Note these commented lines of filter() are not run.
 ```
 
 
 ## Summaries
+
+We often want to summarise our data.
+This may be simple counts of categories, or it may be numerical methods like taking a mean.
+The `count` command simply counts how many of each thing occur in a column.
+
+If we want to do more than this we can use `summarise`, but in order to do this we need to tell R how to group our data. `group_by` tells R which column(s) to group our data on.
+If we had already cleaned our `want_to_learn` column into a tidy format (Wickham 2014 <http://vita.had.co.nz/papers/tidy-data.pdf>), most of our examples would have needed to use `group_by`.
 
 ```{r summaries}
 # Basic how many?
@@ -80,15 +118,24 @@ df %>%
    count(expertise) %>% 
    arrange(n)
 
-# For more complex things
+# By more categories we can use group_by
 df %>% 
    group_by(seniority, expertise) %>% 
    summarise(n=n()) %>% 
    arrange(n)
+
+# For a mean
+# df %>% 
+#   group_by(seniority, expertise) %>% 
+#   summarise(mean_col1=mean(col1))
 ```
 
 
 ## Plots
+
+R is *really* powerful for making plots.
+There are a number of ways to do this, we're going to use the `ggplot2` package.
+Have a look here <http://ggplot2.tidyverse.org/reference/> to give you an idea of some of the things we can do!
 
 ```{r ggplot}
 ggplot(df, aes(affiliation)) +
@@ -102,5 +149,43 @@ ggplot(df, aes(affiliation)) +
    geom_bar() +
    coord_flip() +
    facet_wrap(~ seniority)
+```
+
+
+## What time did you get up?
+
+We can take the time stamps of registration and see how they spread across peoples' (self assessed) level of seniority.
+This is the tip of the iceberg on why data science can be considered intrusive.
+Note we can't really read anything into this as the sample sizes are very small.
+
+```{r time}
+df$hr = substr(df$timestamp, 12, 13)
+df$hr = as.numeric(df$hr)
+
+# All registrations
+ggplot(df, aes(hr)) + 
+   geom_histogram() +
+   labs(title="Hour of day participants registered",
+        x="Hour of the day",
+        y="Number of participants")
+
+ggplot(df, aes(hr)) + 
+   geom_histogram() + 
+   facet_wrap(~seniority) +
+   labs(title="Hour of day participants registered",
+        subtitle="Split by seniority",
+        x="Hour of the day",
+        y="Number of participants")
+
+```
+
+
+## Basic network graph
+
+Show me the money!
+I know, the above doesn't look like network analysis at all, but its usefulness will hopefully become apparent.
+
+```{r basic network}
+
 ```
 
