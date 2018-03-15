@@ -62,6 +62,15 @@ knitr::opts_chunk$set(echo = FALSE)
 - `# this is a comment`
 
 
+## Helpful lingo
+
+- "Data frame" is a table with rows and columns
+- "Vector" is a set of values that are all the same type:
+    - Numeric
+    - Character
+    - ...
+
+
 ## Tidyverse packages
 
 - `readr` for reading plain text files
