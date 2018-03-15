@@ -2,12 +2,13 @@
 title: "Network Analysis in R"
 author: "Dr Mike Spencer, Mr Josh Bird & Dr Elliot Meador"
 date: "23 March 2018"
-output:
-  slidy_presentation: default
+output: html_document
 incremental: yes
+
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(echo = FALSE)
 library(png)
 library(tidyverse)
@@ -41,7 +42,8 @@ triad <- visNetwork(nodes, edges, width = "100%") %>%
       highlight = "yellow"
     ),
     shadow = list(enabled = TRUE, size = 10)
-  )
+  )%>% 
+  visInteraction(navigationButtons = TRUE)
 visSave(triad, file = 'triad.html')
 
 g <- sample_pa(50)
@@ -55,7 +57,7 @@ nodes <- edges %>%
   rename(id = value)
 nodes$size <- degree(g) %>% rescale(.,15,50)
 nodes$label <- nodes$id
-size_degree <- visNetwork(nodes, edges, width = "100%",main="Degree") %>%
+size_degree <- visNetwork(nodes, edges, width = "100%") %>%
   visNodes(
     shape = "dot",
     color = list(
@@ -65,7 +67,8 @@ size_degree <- visNetwork(nodes, edges, width = "100%",main="Degree") %>%
     ),
     shadow = list(enabled = TRUE, size = 10)
   ) %>% 
-  visOptions(highlightNearest = TRUE)
+  visOptions(highlightNearest = TRUE,selectedBy = )%>% 
+  visInteraction(navigationButtons = TRUE)
  # Network sized degree
 visSave(size_degree, file = 'size_degree.html')
 
@@ -73,7 +76,7 @@ visSave(size_degree, file = 'size_degree.html')
 nodes$size <- closeness(g) %>% rescale(.,50,15)
 
 size_closeness <- 
-  visNetwork(nodes, edges, width = "100%",main="Closeness") %>%
+  visNetwork(nodes, edges, width = "100%") %>%
   visNodes(
     shape = "dot",
     color = list(
@@ -83,14 +86,15 @@ size_closeness <-
     ),
     shadow = list(enabled = TRUE, size = 10)
   ) %>% 
-  visOptions(highlightNearest = TRUE)
+  visOptions(highlightNearest = TRUE)%>% 
+  visInteraction(navigationButtons = TRUE)
  # Network sized by closeness
 visSave(size_closeness, file = 'size_closeness.html')
 
 nodes$size <- betweenness(g) %>% rescale(.,50,15)
 
 size_betweenness <- 
-  visNetwork(nodes, edges, width = "100%",main="Betweenness") %>%
+  visNetwork(nodes, edges, width = "100%") %>%
   visNodes(
     shape = "dot",
     color = list(
@@ -100,14 +104,15 @@ size_betweenness <-
     ),
     shadow = list(enabled = TRUE, size = 10)
   ) %>% 
-  visOptions(highlightNearest = TRUE)
+  visOptions(highlightNearest = TRUE)%>% 
+  visInteraction(navigationButtons = TRUE)
  # Network sized by betweenness
 visSave(size_betweenness, file = 'size_betweenness.html')
 
 nodes$size <- eigen_centrality(g)$vector %>% rescale(.,15,50)
 
 size_eigen <- 
-  visNetwork(nodes, edges, width = "100%",main="Eigenvector (embeddedness)") %>%
+  visNetwork(nodes, edges, width = "100%") %>%
   visNodes(
     shape = "dot",
     color = list(
@@ -117,10 +122,10 @@ size_eigen <-
     ),
     shadow = list(enabled = TRUE, size = 10)
   ) %>% 
-  visOptions(highlightNearest = TRUE)
+  visOptions(highlightNearest = TRUE)%>% 
+  visInteraction(navigationButtons = TRUE)
  # Network sized by eigenvector
 visSave(size_eigen, file = 'size_eigen.html')
-
 ```
 
 ## Networks: History & Terminology 
@@ -137,10 +142,17 @@ In this section we will discuss
         - Closeness
         
         
+        
+        
+
 ## History
 Social networks have been a prominent part of sociological theory since the very beginning.
 
    !['I like networks'](marx_1.png) !['Me too'](weber_pic.jpeg) !['Networks are cool'](emile_pic.jpeg)
+   
+   
+   
+   
    
    
 ## History
@@ -156,10 +168,20 @@ htmltools::includeHTML('triad.html')
 
 
 
+
+
+
+
+
 ## Degree
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 htmltools::includeHTML('size_degree.html')
 ```
+
+
+
+
+
 
 ## Closeness
 ```{r,echo=FALSE,message=FALSE,results='asis'}
@@ -167,15 +189,26 @@ htmltools::includeHTML('size_closeness.html')
 ```
 
 
+
+
+
+
+
 ## Betweenness
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 htmltools::includeHTML('size_betweenness.html')
 ```
 
+
+
+
+
+
 ## Eigenvector
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 htmltools::includeHTML('size_eigen.html')
 ```
+
 
 
 
