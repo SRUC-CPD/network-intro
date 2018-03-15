@@ -1,6 +1,6 @@
 ---
 title: "Intro to R"
-author: "Mike Spencer"
+author: "Mike Spencer @MikeRSpencer michael.spencer@sruc.ac.uk"
 date: "10 March 2018"
 output:
    ioslides_presentation:
