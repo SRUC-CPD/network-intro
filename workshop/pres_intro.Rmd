@@ -36,7 +36,7 @@ nodes <-
 triad <- visNetwork(nodes, edges, width = "100%") %>%
   visNodes(
     shape = "square",
-    color = list(
+     color = list(
       background = "lightblue",
       border = "darkblue",
       highlight = "yellow"
@@ -46,86 +46,9 @@ triad <- visNetwork(nodes, edges, width = "100%") %>%
   visInteraction(navigationButtons = TRUE)
 visSave(triad, file = 'triad.html')
 
-g <- sample_pa(50)
-edges <- igraph::as_data_frame(g) %>% 
-  set_names('from','to')
-nodes <- edges %>% 
-  gather(key,value) %>% 
-  select(value) %>% 
-  distinct() %>% 
-  arrange(value) %>% 
-  rename(id = value)
-nodes$size <- degree(g) %>% rescale(.,15,50)
-nodes$label <- nodes$id
-size_degree <- visNetwork(nodes, edges, width = "100%") %>%
-  visNodes(
-    shape = "dot",
-    color = list(
-      background = "lightblue", # make SRUC colors??
-      border = "darkblue",
-      highlight = "yellow"
-    ),
-    shadow = list(enabled = TRUE, size = 10)
-  ) %>% 
-  visOptions(highlightNearest = TRUE,selectedBy = )%>% 
-  visInteraction(navigationButtons = TRUE)
- # Network sized degree
-visSave(size_degree, file = 'size_degree.html')
-
-
-nodes$size <- closeness(g) %>% rescale(.,50,15)
-
-size_closeness <- 
-  visNetwork(nodes, edges, width = "100%") %>%
-  visNodes(
-    shape = "dot",
-    color = list(
-      background = "lightblue", # make SRUC colors??
-      border = "darkblue",
-      highlight = "yellow"
-    ),
-    shadow = list(enabled = TRUE, size = 10)
-  ) %>% 
-  visOptions(highlightNearest = TRUE)%>% 
-  visInteraction(navigationButtons = TRUE)
- # Network sized by closeness
-visSave(size_closeness, file = 'size_closeness.html')
-
-nodes$size <- betweenness(g) %>% rescale(.,50,15)
-
-size_betweenness <- 
-  visNetwork(nodes, edges, width = "100%") %>%
-  visNodes(
-    shape = "dot",
-    color = list(
-      background = "lightblue", # make SRUC colors??
-      border = "darkblue",
-      highlight = "yellow"
-    ),
-    shadow = list(enabled = TRUE, size = 10)
-  ) %>% 
-  visOptions(highlightNearest = TRUE)%>% 
-  visInteraction(navigationButtons = TRUE)
- # Network sized by betweenness
-visSave(size_betweenness, file = 'size_betweenness.html')
-
-nodes$size <- eigen_centrality(g)$vector %>% rescale(.,15,50)
-
-size_eigen <- 
-  visNetwork(nodes, edges, width = "100%") %>%
-  visNodes(
-    shape = "dot",
-    color = list(
-      background = "lightblue", # make SRUC colors??
-      border = "darkblue",
-      highlight = "yellow"
-    ),
-    shadow = list(enabled = TRUE, size = 10)
-  ) %>% 
-  visOptions(highlightNearest = TRUE)%>% 
-  visInteraction(navigationButtons = TRUE)
- # Network sized by eigenvector
-visSave(size_eigen, file = 'size_eigen.html')
+load('nodes.rData')
+load('edges.rData')
+g <- graph_from_data_frame(edges)
 ```
 
 ## Networks: History & Terminology 
@@ -173,9 +96,60 @@ htmltools::includeHTML('triad.html')
 
 
 
+
+## Graph Centrality
+
+It is often helpful to identify key people or nodes in graphs. Specific individuals -- such as the company boss -- can be specified before hand with prior knowledge.
+
+But, just because an individual is the boss -- and in a position of authority, they may not be influential within the network.
+
+Measures of centraility help us better identify key nodes in a network graph. 
+
+### An example
+Suppose we have a network comprise of all group members in marketing company.  This group has 4 team leaders.  Looking at the graph below, which member is most closely connected to all others? 
+```{r,echo=F}
+
+nodes <- nodes %>% 
+    mutate(value = rescale(igraph::closeness(g),2,15),
+           centrality = ifelse(value <= 5,'Highest','Lowest'))
+
+visNetwork::visNetwork(nodes,edges) %>% 
+    visNodes(
+        shape = "square",
+        color = list(
+            background = "lightblue",
+            border = "darkblue",
+            highlight = "yellow"
+        ),
+        shadow = list(enabled = TRUE, size = 10)
+    )%>% 
+    visInteraction(navigationButtons = TRUE) %>% 
+    visOptions(highlightNearest = T,selectedBy = 'centrality')
+```
+
+
+
 ## Degree
+
+The degree of a graph vertex of a graph is the number of graph edges which touch.
 ```{r,echo=FALSE,message=FALSE,results='asis'}
-htmltools::includeHTML('size_degree.html')
+
+nodes <- nodes %>% 
+    mutate(value = rescale(igraph::degree(g),2,15),
+           centrality = ifelse(value >= 12,'Highest','Lowest'))
+
+visNetwork::visNetwork(nodes,edges) %>% 
+    visNodes(
+        shape = "square",
+        color = list(
+            background = "lightblue",
+            border = "darkblue",
+            highlight = "yellow"
+        ),
+        shadow = list(enabled = TRUE, size = 10)
+    )%>% 
+    visInteraction(navigationButtons = TRUE) %>% 
+    visOptions(highlightNearest = T,selectedBy = 'centrality')
 ```
 
 
@@ -184,8 +158,27 @@ htmltools::includeHTML('size_degree.html')
 
 
 ## Closeness
+
+Closeness is the sum of the length of the shortest paths between the node and all other nodes in the graph. Thus the more central a node is, the closer it is to all other nodes.
+
 ```{r,echo=FALSE,message=FALSE,results='asis'}
-htmltools::includeHTML('size_closeness.html')
+
+nodes <- nodes %>% 
+    mutate(value = rescale(igraph::closeness(g),2,15),
+           centrality = ifelse(value <= 5,'Highest','Lowest'))
+
+visNetwork::visNetwork(nodes,edges) %>% 
+    visNodes(
+        shape = "square",
+        color = list(
+            background = "lightblue",
+            border = "darkblue",
+            highlight = "yellow"
+        ),
+        shadow = list(enabled = TRUE, size = 10)
+    )%>% 
+    visInteraction(navigationButtons = TRUE) %>% 
+    visOptions(highlightNearest = T,selectedBy = 'centrality')
 ```
 
 
@@ -195,23 +188,28 @@ htmltools::includeHTML('size_closeness.html')
 
 
 ## Betweenness
+
+The betweenness centrality for each vertex is the number of these shortest paths that pass through the vertex. 
+
 ```{r,echo=FALSE,message=FALSE,results='asis'}
-htmltools::includeHTML('size_betweenness.html')
+
+nodes <- nodes %>% 
+    mutate(value = rescale(igraph::betweenness(g),2,15),
+           centrality = ifelse(value >= 12,'Highest','Lowest'))
+
+visNetwork::visNetwork(nodes,edges) %>% 
+    visNodes(
+        shape = "square",
+        color = list(
+            background = "lightblue",
+            border = "darkblue",
+            highlight = "yellow"
+        ),
+        shadow = list(enabled = TRUE, size = 10)
+    )%>% 
+    visInteraction(navigationButtons = TRUE) %>% 
+    visOptions(highlightNearest = T,selectedBy = 'centrality')
 ```
-
-
-
-
-
-
-## Eigenvector
-```{r,echo=FALSE,message=FALSE,results='asis'}
-htmltools::includeHTML('size_eigen.html')
-```
-
-
-
-
 
 
 
