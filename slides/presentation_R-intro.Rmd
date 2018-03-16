@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - Used around the world
 - Open source
     - Free as in beer
-    - Free as in speach
+    - Free as in speech
 
 
 ## Help!
