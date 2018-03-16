@@ -1,0 +1,34 @@
+---
+title: "Network analysis workshop - welcome!"
+author: "Mike Spencer, Joshua Bird, Elliot Meador"
+date: "16 March 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Information
+
+All course materials are on our webpage: <http://bit.ly/SRUC-network-intro>.
+
+We'll be running the workshop on EPIC's (<http://www.epicscotland.org/>) RStudio server. Your login details are:
+
+server address: <https://epidata.sruc.ac.uk/rstudio/>.
+
+username: `r users[i, 1]`
+
+password: `r users[i, 2]`
+
+## Agenda
+
+1. Welcome (Joshua)
+2. SNA introduction (Elliot)
+3. R introduction (Mike)
+4. Lead examples/live coding (Mike)
+5. Individual/group work
+6. Show and tell
+7. Round up
