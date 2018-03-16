@@ -1,0 +1,380 @@
+---
+title: "Data to a network visualisation"
+author: "Mike Spencer"
+date: "14 March 2018"
+output:
+   pdf_document:
+         latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Intro
+
+This document has been written in R and accompanies the live coding part of the network analysis workshop.
+In this document you'll see a mixture of code and output.
+Hopefully it'll be easy to tell these apart!
+To help, lines of output begin with `##`.
+
+## Packages
+
+* Install only once
+* Load into session with `library()`
+
+```{r packages}
+# install.packages("tidyverse")
+# install.packages("igraph")
+
+library(tidyverse)
+library(igraph)
+```
+
+
+## Reading data
+
+We can read data from local files, but as you'll have seen in the workshop we can also read files from a web address.
+
+```{r reading data}
+# Reads and outputs to console
+read_csv("../data/SNA_anon_delegates.csv")
+
+# Reads and assigns to object df
+df = read_csv("../data/SNA_anon_delegates.csv")
+```
+
+
+## Cleaning data
+
+This section prepares the dataset a little for exploratory analysis.
+It's worth noting here, that I've avoided tidying the `want_to_learn` columns at this point.
+
+```{r cleaning}
+# Shortening and removing spaces from column names
+colnames(df) = c("timestamp", "name", "affiliation", "seniority", "expertise", "want_to_learn")
+
+# Reducing the long other answers
+df$expertise[df$expertise=="Network analysis sofware like biolayout/Miru"] = "Biolayout"
+df$expertise[df$expertise=="Excel (advanced)"] = "MS/Libre/Open office"
+```
+
+
+## Selecting columns
+
+Particularly if we're working with large datasets, it can be useful to pull out the columns we're interested in.
+
+```{r select}
+# Data followed by columns we want
+select(df, name, affiliation, seniority, expertise)
+
+# Or data followed by columns we don't want
+select(df, -timestamp, -want_to_learn)
+```
+
+
+## Filter by row value
+
+What if we're not interested in every observation?
+Maybe we only want to look at those respondents from Land Economy, or find those with expertise in R.
+
+```{r filter}
+# Single filter
+filter(df, affiliation=="Research - LEES")
+
+# Exclude
+filter(df, expertise!="R")
+
+# Multiple filters? use & (and) or | (or)
+filter(df, affiliation=="Research - LEES" & expertise=="R")
+
+# With a pipe
+df %>% 
+   select(-timestamp, -want_to_learn) %>% 
+   filter(affiliation=="Research - LEES" & expertise=="R")
+
+# With numbers
+# filter(df, col_num==10)
+# filter(df, col_num>10)
+# etc.
+# Note these commented lines of filter() are not run.
+```
+
+
+## Summaries
+
+We often want to summarise our data.
+This may be simple counts of categories, or it may be numerical methods like taking a mean.
+The `count` command simply counts how many of each thing occur in a column.
+
+If we want to do more than this we can use `summarise`, but in order to do this we need to tell R how to group our data. `group_by` tells R which column(s) to group our data on.
+If we had already cleaned our `want_to_learn` column into a tidy format (Wickham 2014 <http://vita.had.co.nz/papers/tidy-data.pdf>), most of our examples would have needed to use `group_by`.
+
+```{r summaries}
+# Basic how many?
+count(df, expertise)
+
+# Ordered
+df %>% 
+   count(expertise) %>% 
+   arrange(n)
+
+# By more categories we can use group_by
+df %>% 
+   group_by(seniority, expertise) %>% 
+   summarise(n=n()) %>% 
+   arrange(n)
+
+# For a mean
+# df %>% 
+#   group_by(seniority, expertise) %>% 
+#   summarise(mean_col1=mean(col1))
+```
+
+
+## Plots
+
+R is *really* powerful for making plots.
+There are a number of ways to do this, we're going to use the `ggplot2` package.
+Have a look here <http://ggplot2.tidyverse.org/reference/> to give you an idea of some of the things we can do!
+
+```{r ggplot}
+ggplot(df, aes(affiliation)) +
+   geom_bar()
+
+ggplot(df, aes(affiliation)) +
+   geom_bar() +
+   coord_flip()
+
+ggplot(df, aes(affiliation)) +
+   geom_bar() +
+   coord_flip() +
+   facet_wrap(~ seniority)
+```
+
+
+## What time did you get up?
+
+We can take the time stamps of registration and see how they spread across peoples' (self assessed) level of seniority.
+This is the tip of the iceberg on why data science can be considered intrusive.
+Note we can't really read anything into this as the sample sizes are very small.
+
+Here we're introducing `mutate` to add extra variables.
+
+```{r time}
+# Extract the hour of registration from the timestamp column
+df %>% 
+   select(timestamp) %>% 
+   mutate(hr=substr(timestamp, 12, 13))
+
+# As a number
+x = df %>% 
+   select(timestamp, seniority) %>% 
+   mutate(hr=as.numeric(substr(timestamp, 12, 13)))
+
+# All registrations
+ggplot(x, aes(hr)) + 
+   geom_histogram() +
+   labs(title="Hour of day participants registered",
+        x="Hour of the day",
+        y="Number of participants")
+
+# Split by seniority
+ggplot(x, aes(hr)) + 
+   geom_histogram() + 
+   facet_wrap(~seniority) +
+   labs(title="Hour of day participants registered",
+        subtitle="Split by seniority",
+        x="Hour of the day",
+        y="Number of participants")
+```
+
+
+## Tidy data
+
+The concept of tidy data is where each column is a variable and each row is an observation.
+It's worth repeating: Wickham 2014 is excellent <http://ggplot2.tidyverse.org/reference/>.
+Here we're going to use `str_count` to find out how many things each participant wants to learn and the split into separate columns.
+
+```{r tidying}
+# Maximum software types
+n = str_count(df$want_to_learn, ",") %>% 
+   max() + 1
+
+# Wide not tidy data
+df.learning = df %>% 
+   select(name, want_to_learn) %>% 
+   separate(want_to_learn, paste0("learn_", 1:n), sep=", ", fill="right")
+
+# Tidy data
+# Double thumbs up
+df.learning = df %>% 
+   select(name, want_to_learn) %>% 
+   separate(want_to_learn, paste0("learn_", 1:n), sep=", ", fill="right") %>% 
+   gather(ToDelete, want_to_learn, -name, na.rm=T) %>% 
+   select(-ToDelete)
+```
+
+
+## Joining data
+
+We've now got a separate, tidy, data frame of the software each person wants to learn.
+As required we can join this to our original data for use.
+
+```{r joins}
+df %>% 
+   select(name, seniority) %>% 
+   inner_join(df.learning)
+
+df %>% 
+   select(name, seniority) %>% 
+   inner_join(df.learning) %>% 
+   ggplot(aes(want_to_learn)) +
+   geom_bar() +
+   facet_wrap(~ seniority) +
+   coord_flip()
+```
+
+
+## Basic network graph
+
+Show me the money!
+I know, the above doesn't look like network analysis at all, but its usefulness will hopefully become apparent.
+
+This section moves on a lot from the earlier one.
+I would love there to be time to explain this code in detail, but we'll have to save that for another workshop.
+
+The example below creates a bipartite graph, but with nodes showing the two tiers.
+In this case we're using people and seniority for our nodes/vertices.
+
+```{r basic network, fig.height=10, fig.width=10}
+# Make a data frame of edges
+df.edges = df %>% 
+   select(name, seniority)
+
+# Make a data frame of vertices
+# First create a vectors of unique people and seniority levels
+x = data.frame(name=unique(df$seniority), size=20)
+y = data.frame(name=df$name, size=5)
+
+# Join these vectors together
+df.vertices = rbind(x, y)
+
+# Turn these into a graph data frame
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+
+# Plot our first graph!
+plot(df_graph)
+
+# Maybe different colours?
+x = data.frame(name=unique(df$seniority), color="#75ab42", size=20)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+
+## Vertex size
+
+But really, we might like our network to use parameters, or derived parameters to influence the way it looks.
+We can use the skills we learned during the earlier sections to do this.
+
+```{r vertex size, fig.height=10, fig.width=10}
+# Get count of people
+x = df %>% 
+   count(seniority) %>% 
+   mutate(name=seniority,
+          color="#75ab42",
+          size = n * 2) %>% 
+   select(-n, -seniority)
+
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+
+## Edge weight
+
+We can also change our edge weight to show a variable.
+In this example I'm using the count of different software types someone wants to learn to weight the edge.
+
+```{r edge weight, fig.height=10, fig.width=10}
+# Count software types for each person
+# Make into our edges
+df.edges = df %>% 
+   select(name, seniority, want_to_learn) %>% 
+   mutate(width=str_count(df$want_to_learn, ", ") + 1,
+          color="#004b23") %>% 
+   select(-want_to_learn)
+
+# Vertices
+x = df %>% 
+   count(seniority) %>% 
+   mutate(name=seniority, color="#75ab42", size = n * 2) %>% 
+   select(-n, -seniority)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+
+## Putting these ideas together
+
+We've some potentially useful data available here.
+Can we use it to make a diagram of where to go for help?
+
+```{r help, fig.height=10, fig.width=10}
+# Want to learn edges
+x = df.learning %>% 
+   select(name, want_to_learn) %>% 
+   mutate(software=want_to_learn,
+          lty=2,
+          width=1,
+          color="#004b23") %>% 
+   select(-want_to_learn)
+# Expertise edges
+y = df %>% 
+   select(name, expertise) %>% 
+   mutate(software=expertise,
+          lty=1,
+          width=1,
+          color="#004b23") %>% 
+   select(-expertise)
+
+df.edges = rbind(x, y)
+
+# Vertices
+x = df.edges %>% 
+   count(software) %>% 
+   mutate(name=software, color=rgb(0/255, 156/255, 222/255 ), size = n) %>% 
+   select(-n, -software)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+
+par(mar=c(0.5, 0.5, 0.5, 0.5))
+plot(df_graph,
+     vertex.label.color="#333333",
+     edge.curved=.1)
+par(mar=c(5, 4, 4, 2) + 0.1)
+```
+
+Clearly more work to do to get the sizing right!
