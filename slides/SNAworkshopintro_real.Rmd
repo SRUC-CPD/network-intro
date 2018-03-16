@@ -1,0 +1,40 @@
+---
+title: "Introduction to Social Network Analysis"
+author: "Josh, Elliot and Mike"
+date: "16 March 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(png)
+library(grid)
+```
+
+## Our Sponsors
+
+![Datafest](C:/Users/jobird/Documents/R/Datafestlogo.png)
+![Datafest](C:/Users/jobird/Documents/R/SRUC_logo.png)
+
+## Structure of the Day
+
+1. What is social network analysis (Elliot)
+    - History
+    - Terminology
+2. Intro to R (Mike)
+    - What is it?
+    - Why use it?
+3. How to do network analysis with R (Mike)
+    - Data provided in registation survey
+
+## Things to think about
+
+1. What we will _not_ be discussing
+    + data management
+    + interactive visualisations
+    + other programming languages (SQL, Linux, etc)
+2. What would you want further training on?
+
+##Closing thoughts
+
+* What further training do you want?
