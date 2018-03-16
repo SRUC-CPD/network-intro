@@ -375,12 +375,38 @@ What time did you get up?
 
 We can take the time stamps of registration and see how they spread across peoples' (self assessed) level of seniority. This is the tip of the iceberg on why data science can be considered intrusive. Note we can't really read anything into this as the sample sizes are very small.
 
+Here we're introducing `mutate` to add extra variables.
+
 ``` r
-df$hr = substr(df$timestamp, 12, 13)
-df$hr = as.numeric(df$hr)
+# Extract the hour of registration from the timestamp column
+df %>% 
+   select(timestamp) %>% 
+   mutate(hr=substr(timestamp, 12, 13))
+```
+
+    ## # A tibble: 27 x 2
+    ##              timestamp    hr
+    ##                  <chr> <chr>
+    ##  1 02/03/2018 21:44:54    21
+    ##  2 02/03/2018 21:47:45    21
+    ##  3 02/03/2018 23:03:18    23
+    ##  4 03/03/2018 04:53:02    04
+    ##  5 03/03/2018 10:26:59    10
+    ##  6 03/03/2018 10:32:22    10
+    ##  7 03/03/2018 11:56:24    11
+    ##  8 03/03/2018 13:30:19    13
+    ##  9 03/03/2018 14:39:47    14
+    ## 10 04/03/2018 08:48:31    08
+    ## # ... with 17 more rows
+
+``` r
+# As a number
+x = df %>% 
+   select(timestamp, seniority) %>% 
+   mutate(hr=as.numeric(substr(timestamp, 12, 13)))
 
 # All registrations
-ggplot(df, aes(hr)) + 
+ggplot(x, aes(hr)) + 
    geom_histogram() +
    labs(title="Hour of day participants registered",
         x="Hour of the day",
@@ -392,7 +418,8 @@ ggplot(df, aes(hr)) +
 ![](R-intro_workthrough_files/figure-markdown_github/time-1.png)
 
 ``` r
-ggplot(df, aes(hr)) + 
+# Split by seniority
+ggplot(x, aes(hr)) + 
    geom_histogram() + 
    facet_wrap(~seniority) +
    labs(title="Hour of day participants registered",
@@ -404,3 +431,221 @@ ggplot(df, aes(hr)) +
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](R-intro_workthrough_files/figure-markdown_github/time-2.png)
+
+Tidy data
+---------
+
+The concept of tidy data is where each column is a variable and each row is an observation. It's worth repeating: Wickham 2014 is excellent <http://ggplot2.tidyverse.org/reference/>. Here we're going to use `str_count` to find out how many things each participant wants to learn and the split into separate columns.
+
+``` r
+# Maximum software types
+n = str_count(df$want_to_learn, ",") %>% 
+   max() + 1
+
+# Wide not tidy data
+df.learning = df %>% 
+   select(name, want_to_learn) %>% 
+   separate(want_to_learn, paste0("learn_", 1:n), sep=", ", fill="right")
+
+# Tidy data
+# Double thumbs up
+df.learning = df %>% 
+   select(name, want_to_learn) %>% 
+   separate(want_to_learn, paste0("learn_", 1:n), sep=", ", fill="right") %>% 
+   gather(ToDelete, want_to_learn, -name, na.rm=T) %>% 
+   select(-ToDelete)
+```
+
+Joining data
+------------
+
+We've now got a separate, tidy, data frame of the software each person wants to learn. As required we can join this to our original data for use.
+
+``` r
+df %>% 
+   select(name, seniority) %>% 
+   inner_join(df.learning)
+```
+
+    ## Joining, by = "name"
+
+    ## # A tibble: 52 x 3
+    ##        name    seniority want_to_learn
+    ##       <chr>        <chr>         <chr>
+    ##  1 Person 1 Early career             R
+    ##  2 Person 1 Early career          SPSS
+    ##  3 Person 2 Early career             R
+    ##  4 Person 3      Student           CBS
+    ##  5 Person 3      Student         Stata
+    ##  6 Person 3      Student        Python
+    ##  7 Person 3      Student          SPSS
+    ##  8 Person 3      Student           SAS
+    ##  9 Person 3      Student          QGIS
+    ## 10 Person 3      Student        ArcGIS
+    ## # ... with 42 more rows
+
+``` r
+df %>% 
+   select(name, seniority) %>% 
+   inner_join(df.learning) %>% 
+   ggplot(aes(want_to_learn)) +
+   geom_bar() +
+   facet_wrap(~ seniority) +
+   coord_flip()
+```
+
+    ## Joining, by = "name"
+
+![](R-intro_workthrough_files/figure-markdown_github/joins-1.png)
+
+Basic network graph
+-------------------
+
+Show me the money! I know, the above doesn't look like network analysis at all, but its usefulness will hopefully become apparent.
+
+This section moves on a lot from the earlier one. I would love there to be time to explain this code in detail, but we'll have to save that for another workshop.
+
+The example below creates a bipartite graph, but with nodes showing the two tiers. In this case we're using people and seniority for our nodes/vertices.
+
+``` r
+# Make a data frame of edges
+df.edges = df %>% 
+   select(name, seniority)
+
+# Make a data frame of vertices
+# First create a vectors of unique people and seniority levels
+x = data.frame(name=unique(df$seniority), size=20)
+y = data.frame(name=df$name, size=5)
+
+# Join these vectors together
+df.vertices = rbind(x, y)
+
+# Turn these into a graph data frame
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+
+# Plot our first graph!
+plot(df_graph)
+```
+
+![](R-intro_workthrough_files/figure-markdown_github/basic%20network-1.png)
+
+``` r
+# Maybe different colours?
+x = data.frame(name=unique(df$seniority), color="#75ab42", size=20)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+![](R-intro_workthrough_files/figure-markdown_github/basic%20network-2.png)
+
+Vertex size
+-----------
+
+But really, we might like our network to use parameters, or derived parameters to influence the way it looks. We can use the skills we learned during the earlier sections to do this.
+
+``` r
+# Get count of people
+x = df %>% 
+   count(seniority) %>% 
+   mutate(name=seniority,
+          color="#75ab42",
+          size = n * 2) %>% 
+   select(-n, -seniority)
+
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+![](R-intro_workthrough_files/figure-markdown_github/vertex%20size-1.png)
+
+Edge weight
+-----------
+
+We can also change our edge weight to show a variable. In this example I'm using the count of different software types someone wants to learn to weight the edge.
+
+``` r
+# Count software types for each person
+# Make into our edges
+df.edges = df %>% 
+   select(name, seniority, want_to_learn) %>% 
+   mutate(width=str_count(df$want_to_learn, ", ") + 1,
+          color="#004b23") %>% 
+   select(-want_to_learn)
+
+# Vertices
+x = df %>% 
+   count(seniority) %>% 
+   mutate(name=seniority, color="#75ab42", size = n * 2) %>% 
+   select(-n, -seniority)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+plot(df_graph,
+     vertex.label.color="#333333")
+```
+
+![](R-intro_workthrough_files/figure-markdown_github/edge%20weight-1.png)
+
+Putting these ideas together
+----------------------------
+
+We've some potentially useful data available here. Can we use it to make a diagram of where to go for help?
+
+``` r
+# Want to learn edges
+x = df.learning %>% 
+   select(name, want_to_learn) %>% 
+   mutate(software=want_to_learn,
+          lty=2,
+          width=1,
+          color="#004b23") %>% 
+   select(-want_to_learn)
+# Expertise edges
+y = df %>% 
+   select(name, expertise) %>% 
+   mutate(software=expertise,
+          lty=1,
+          width=1,
+          color="#004b23") %>% 
+   select(-expertise)
+
+df.edges = rbind(x, y)
+
+# Vertices
+x = df.edges %>% 
+   count(software) %>% 
+   mutate(name=software, color=rgb(0/255, 156/255, 222/255 ), size = n) %>% 
+   select(-n, -software)
+y = data.frame(name=df$name, color="#75ab42", size=5)
+df.vertices = rbind(x, y)
+df_graph = graph.data.frame(df.edges,
+                            df.vertices,
+                            directed=F)
+
+par(mar=c(0.5, 0.5, 0.5, 0.5))
+plot(df_graph,
+     vertex.label.color="#333333",
+     edge.curved=.1)
+```
+
+![](R-intro_workthrough_files/figure-markdown_github/help-1.png)
+
+``` r
+par(mar=c(5, 4, 4, 2) + 0.1)
+```
+
+Clearly more work to do to get the sizing right!
