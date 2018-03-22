@@ -11,6 +11,6 @@ df = read_csv("~/Downloads/Network analysis external delegates (Responses) - For
 df$`Your name` = paste("Person", 1:nrow(df))
 
 df = df %>% 
-   select(-`Do you have any extra access or dietary requirements?`)
+   select(-`Do you have any extra access or dietary requirements?`, -Employer)
 
 write_csv(df, "~/repo/network-intro/data/SNA_anon_delegates.csv")
