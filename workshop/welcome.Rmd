@@ -15,13 +15,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 All course materials are on our webpage: <http://bit.ly/SRUC-network-intro>.
 
+You can use our *WiFi* network:
+
+*Wifi username:* ExtCourse1
+
+*Wifi password:* 296061
+
 We'll be running the workshop on EPIC's (<http://www.epicscotland.org/>) RStudio server. Your login details are:
 
-server address: <https://epidata.sruc.ac.uk/rstudio/>.
+*Server address:* <https://epidata.sruc.ac.uk/rstudio/>. The trailing slash (/) is needed!
 
-username: `r users[i, 1]`
+*Server username:* `r users[i, 1]`
 
-password: `r users[i, 2]`
+*Server password:* `r users[i, 2]`
 
 ## Agenda
 
