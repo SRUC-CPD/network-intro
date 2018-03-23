@@ -1,28 +1,21 @@
-Timestamp,Your name,Your affiliation,Your seniority,Primary software expertise,I really want to learn...
-02/03/2018 21:44:54,Person 1,Research - AVS,Early career,MaxQDA,"R, SPSS"
-02/03/2018 21:47:45,Person 2,Research - LEES,Early career,FORTRAN,R
-02/03/2018 23:03:18,Person 3,Research - FFS,Student,R,"CBS, Stata, Python, SPSS, SAS, QGIS, ArcGIS"
-03/03/2018 04:53:02,Person 4,Research - FFS,Early career,SQL,R
-03/03/2018 10:26:59,Person 5,Research - AVS,Student,R,"R, Python"
-03/03/2018 10:32:22,Person 6,Research - FFS,Early career,R,"SQL, R"
-03/03/2018 11:56:24,Person 7,Research - AVS,Student,MS/Libre/Open office,R
-03/03/2018 13:30:19,Person 8,Research - CSS,Early career,R,"SQL, Python"
-03/03/2018 14:39:47,Person 9,Research - LEES,Mid career,Stata,"R, Stata"
-04/03/2018 08:48:31,Person 10,Research - FFS,Senior,Network analysis sofware like biolayout/Miru,R
-04/03/2018 13:03:34,Person 11,Research - LEES,Student,R,"R, Python"
-04/03/2018 17:07:53,Person 12,Research - AVS,Student,R,R
-04/03/2018 21:56:33,Person 13,Research - LEES,Mid career,MS/Libre/Open office,R
-05/03/2018 09:25:32,Person 14,Research - LEES,Student,MS/Libre/Open office,"R, QGIS"
-05/03/2018 09:55:59,Person 15,Research - LEES,Early career,R,"SQL, R, Python, QGIS, ArcGIS"
-05/03/2018 11:15:50,Person 16,Research - FFS,Student,R,R
-05/03/2018 11:20:17,Person 17,Research - AVS,Student,R,"R, Python"
-05/03/2018 11:20:50,Person 18,Research - FFS,Student,R,R
-05/03/2018 11:46:48,Person 19,Corporate/support services,Mid career,CBS,VBA
-05/03/2018 17:10:43,Person 20,Research - LEES,Student,MS/Libre/Open office,"SQL, R, SPSS, QGIS, Network analysis"
-05/03/2018 17:42:18,Person 21,Consulting,Senior,CBS,R
-06/03/2018 09:09:50,Person 22,Consulting,Senior,MS/Libre/Open office,SQL
-06/03/2018 17:10:11,Person 23,Research - LEES,Mid career,R,"R, Python, ArcGIS"
-07/03/2018 16:44:49,Person 24,Consulting,Mid career,Excel (advanced),"R, Excel (advanced)"
-08/03/2018 01:25:19,Person 25,Research - LEES,Student,None,R
-08/03/2018 13:15:20,Person 26,Education,Mid career,ArcGIS,R
-15/03/2018 10:56:00,Person 27,Research - CSS,Student,ArcGIS,R
+Timestamp,Your name,Your sector,Your seniority,Primary software expertise,I really want to learn...
+19/03/2018 17:13:18,Person 1,Private sector,Mid career,Arc/QGIS,"Python, R"
+19/03/2018 17:15:46,Person 2,Public sector,Early career,Arc/QGIS,"Python, SQL"
+19/03/2018 17:16:17,Person 3,Public sector,Mid career,Arc/QGIS,Python
+19/03/2018 17:23:06,Person 4,Third sector,Senior,MS/Libre/Open office,"Arc/QGIS, R, SPSS"
+19/03/2018 17:54:26,Person 5,Academic,Student,none,R
+19/03/2018 18:12:38,Person 6,Private sector,Early career,SQL,"Python, R"
+19/03/2018 18:33:53,Person 7,Education,Mid career,R,"R, SQL"
+19/03/2018 18:37:37,Person 8,Private sector,Mid career,R,"Python, R, SQL"
+19/03/2018 20:29:12,Person 9,Academic,Student,SPSS,"R, igraph"
+19/03/2018 21:35:58,Person 10,Education,Mid career,MS/Libre/Open office,"Python, R, SQL"
+20/03/2018 08:34:19,Person 11,Public sector,Mid career,R,"Python, SQL"
+20/03/2018 11:54:49,Person 12,Academic,Mid career,Genstat,"R, SQL"
+20/03/2018 13:52:30,Person 13,Academic,Early career,R,Java
+20/03/2018 16:27:12,Person 14,Academic,Student,SPSS,"Python, R, Stata"
+21/03/2018 08:57:04,Person 15,Private sector,Mid career,I'm assuming MS is Microsoft Office?,Unsure! Whichever is most appropriate to requirements for analysing historic membership records data
+21/03/2018 17:22:52,Person 16,Public sector,Mid career,Arc/QGIS,"Arc/QGIS, R"
+21/03/2018 19:30:25,Person 17,Private sector,Mid career,SQL,Python
+21/03/2018 23:39:52,Person 18,Academic,Student,Gephi,"Arc/QGIS, Python, R, SQL"
+22/03/2018 01:54:49,Person 19,Academic,Student,MS/Libre/Open office,"Arc/QGIS, R"
+22/03/2018 07:37:45,Person 20,Public sector,Early career,SQL,"Arc/QGIS, Python, R"

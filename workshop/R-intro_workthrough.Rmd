@@ -37,10 +37,10 @@ We can read data from local files, but as you'll have seen in the workshop we ca
 
 ```{r reading data}
 # Reads and outputs to console
-read_csv("../data/SNA_anon_delegates.csv")
+read_csv("https://raw.githubusercontent.com/SRUC-CPD/network-intro/master/data/SNA_anon_delegates.csv")
 
 # Reads and assigns to object df
-df = read_csv("../data/SNA_anon_delegates.csv")
+df = read_csv("https://raw.githubusercontent.com/SRUC-CPD/network-intro/master/data/SNA_anon_delegates.csv")
 ```
 
 
@@ -51,11 +51,10 @@ It's worth noting here, that I've avoided tidying the `want_to_learn` columns at
 
 ```{r cleaning}
 # Shortening and removing spaces from column names
-colnames(df) = c("timestamp", "name", "affiliation", "seniority", "expertise", "want_to_learn")
+colnames(df) = c("timestamp", "name", "sector", "seniority", "expertise", "want_to_learn")
 
 # Reducing the long other answers
-df$expertise[df$expertise=="Network analysis sofware like biolayout/Miru"] = "Biolayout"
-df$expertise[df$expertise=="Excel (advanced)"] = "MS/Libre/Open office"
+df$expertise[df$expertise=="I'm assuming MS is Microsoft Office?"] = "MS/Libre/Open office"
 ```
 
 
@@ -65,7 +64,7 @@ Particularly if we're working with large datasets, it can be useful to pull out 
 
 ```{r select}
 # Data followed by columns we want
-select(df, name, affiliation, seniority, expertise)
+select(df, name, sector, seniority, expertise)
 
 # Or data followed by columns we don't want
 select(df, -timestamp, -want_to_learn)
@@ -79,18 +78,18 @@ Maybe we only want to look at those respondents from Land Economy, or find those
 
 ```{r filter}
 # Single filter
-filter(df, affiliation=="Research - LEES")
+filter(df, sector=="Private sector")
 
 # Exclude
 filter(df, expertise!="R")
 
 # Multiple filters? use & (and) or | (or)
-filter(df, affiliation=="Research - LEES" & expertise=="R")
+filter(df, sector=="Private sector" & expertise=="R")
 
 # With a pipe
 df %>% 
    select(-timestamp, -want_to_learn) %>% 
-   filter(affiliation=="Research - LEES" & expertise=="R")
+   filter(sector=="Private sector" & expertise=="R")
 
 # With numbers
 # filter(df, col_num==10)
@@ -138,21 +137,21 @@ There are a number of ways to do this, we're going to use the `ggplot2` package.
 Have a look here <http://ggplot2.tidyverse.org/reference/> to give you an idea of some of the things we can do!
 
 ```{r ggplot}
-ggplot(df, aes(affiliation)) +
+ggplot(df, aes(sector)) +
    geom_bar()
 
-ggplot(df, aes(affiliation)) +
+ggplot(df, aes(sector)) +
    geom_bar() +
    coord_flip()
 
-ggplot(df, aes(affiliation)) +
+ggplot(df, aes(sector)) +
    geom_bar() +
    coord_flip() +
    facet_wrap(~ seniority)
 ```
 
 
-## What time did you get up?
+## Creepy Data Science
 
 We can take the time stamps of registration and see how they spread across peoples' (self assessed) level of seniority.
 This is the tip of the iceberg on why data science can be considered intrusive.
@@ -192,7 +191,7 @@ ggplot(x, aes(hr)) +
 ## Tidy data
 
 The concept of tidy data is where each column is a variable and each row is an observation.
-It's worth repeating: Wickham 2014 is excellent <http://ggplot2.tidyverse.org/reference/>.
+It's worth repeating: Wickham 2014 is excellent <http://vita.had.co.nz/papers/tidy-data.pdf>.
 Here we're going to use `str_count` to find out how many things each participant wants to learn and the split into separate columns.
 
 ```{r tidying}
@@ -253,8 +252,14 @@ df.edges = df %>%
 
 # Make a data frame of vertices
 # First create a vectors of unique people and seniority levels
-x = data.frame(name=unique(df$seniority), size=20)
-y = data.frame(name=df$name, size=5)
+x = df %>% 
+   distinct(seniority) %>% 
+   mutate(name=seniority, size=20) %>% 
+   select(-seniority)
+
+y = df %>% 
+   select(name) %>% 
+   mutate(size=5)
 
 # Join these vectors together
 df.vertices = rbind(x, y)
@@ -293,7 +298,10 @@ x = df %>%
           size = n * 2) %>% 
    select(-n, -seniority)
 
-y = data.frame(name=df$name, color="#75ab42", size=5)
+y = df %>% 
+   select(name) %>% 
+   mutate(size=5, color="#75ab42")
+
 df.vertices = rbind(x, y)
 df_graph = graph.data.frame(df.edges,
                             df.vertices,
@@ -322,7 +330,9 @@ x = df %>%
    count(seniority) %>% 
    mutate(name=seniority, color="#75ab42", size = n * 2) %>% 
    select(-n, -seniority)
-y = data.frame(name=df$name, color="#75ab42", size=5)
+y = df %>% 
+   select(name) %>% 
+   mutate(size=5, color="#75ab42")
 df.vertices = rbind(x, y)
 df_graph = graph.data.frame(df.edges,
                             df.vertices,
@@ -336,6 +346,7 @@ plot(df_graph,
 
 We've some potentially useful data available here.
 Can we use it to make a diagram of where to go for help?
+Here we use `lty` to change the line type, use `?par` and search for `lty` to see other options.
 
 ```{r help, fig.height=10, fig.width=10}
 # Want to learn edges
@@ -362,7 +373,9 @@ x = df.edges %>%
    count(software) %>% 
    mutate(name=software, color=rgb(0/255, 156/255, 222/255 ), size = n) %>% 
    select(-n, -software)
-y = data.frame(name=df$name, color="#75ab42", size=5)
+y = df %>% 
+   select(name) %>% 
+   mutate(size=5, color="#75ab42")
 df.vertices = rbind(x, y)
 df_graph = graph.data.frame(df.edges,
                             df.vertices,
@@ -372,6 +385,11 @@ par(mar=c(0.5, 0.5, 0.5, 0.5))
 plot(df_graph,
      vertex.label.color="#333333",
      edge.curved=.1)
+
+legend("bottomleft",
+       c("Expertise", "Want to learn"),
+       lty=c(1, 2),
+       col="#004b23")
 par(mar=c(5, 4, 4, 2) + 0.1)
 ```
 

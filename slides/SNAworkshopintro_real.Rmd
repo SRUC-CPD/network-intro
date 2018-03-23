@@ -26,6 +26,8 @@ library(grid)
     - Why use it?
 3. How to do network analysis with R (Mike)
     - Data provided in registation survey
+4. Independent/group work
+5. Wrap up
 
 ## Things to think about
 
@@ -33,7 +35,8 @@ library(grid)
     + data management
     + interactive visualisations
     + other programming languages (SQL, Linux, etc)
-2. What would you want further training on?
+2. Where/how can you get data?
+3. What would you want further training on?
 
 ##Closing thoughts
 

@@ -1,7 +1,7 @@
 ---
 title: "Intro to R"
 author: "Mike Spencer @MikeRSpencer michael.spencer@sruc.ac.uk"
-date: "10 March 2018"
+date: "23 March 2018"
 output:
    ioslides_presentation:
    logo: sruc.jpeg
@@ -31,6 +31,9 @@ knitr::opts_chunk$set(echo = FALSE)
 - Online courses
     - <https://www.datacamp.com/courses/tech:r>
     - <https://www.coursera.org/specializations/jhu-data-science>
+- User groups
+    - <http://edinbr.org/>
+    - <https://twitter.com/hashtag/rstats>
 
 
 ## The R interface
