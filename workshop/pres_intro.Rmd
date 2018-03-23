@@ -21,19 +21,19 @@ rescale <- function(nchar,low,high){
     rscl <- ((high-low)*(nchar-min_d))/(max_d-min_d) + low
     rscl
 }
-edges <- data_frame(
+edge <- data_frame(
   from = c('1', '1', '11', '11', '12'),
   to = c('2', '3', '12', '13', '13'),
   dashes = c(F, F, F, F, T)
 )
-
-nodes <-
+getwd()
+node <-
   data_frame(
     id = c(1:3, 11:13),
     label = c('Elliot', 'Josh', 'Mike', 'Elliot', 'Josh', 'Mike')
   )
 
-triad <- visNetwork(nodes, edges, width = "100%") %>%
+triad <- visNetwork(node, edge, width = "100%") %>%
   visNodes(
     shape = "square",
      color = list(
@@ -46,8 +46,10 @@ triad <- visNetwork(nodes, edges, width = "100%") %>%
   visInteraction(navigationButtons = TRUE)
 visSave(triad, file = 'triad.html')
 
-load('nodes.rData')
-load('edges.rData')
+load('C:/R/network-intro/workshop/nodes.RData')
+load('C:/R/network-intro/workshop/edges.RData')
+head(edges)
+head(nodes)
 g <- graph_from_data_frame(edges)
 ```
 
@@ -90,13 +92,6 @@ htmltools::includeHTML('triad.html')
 ```
 
 
-
-
-
-
-
-
-
 ## Graph Centrality
 
 It is often helpful to identify key people or nodes in graphs. Specific individuals -- such as the company boss -- can be specified before hand with prior knowledge.
@@ -110,8 +105,8 @@ Suppose we have a network comprise of all group members in marketing company.  T
 ```{r,echo=F}
 
 nodes <- nodes %>% 
-    mutate(value = rescale(igraph::closeness(g),2,15),
-           centrality = ifelse(value <= 5,'Highest','Lowest'))
+    mutate(value = rescale(igraph::eigen_centrality(g)$vector,2,15),
+           centrality = ifelse(value == max(value),'Highest','Lowest'))
 
 visNetwork::visNetwork(nodes,edges) %>% 
     visNodes(
@@ -134,9 +129,11 @@ visNetwork::visNetwork(nodes,edges) %>%
 The degree of a graph vertex of a graph is the number of graph edges which touch.
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 
+
+
 nodes <- nodes %>% 
     mutate(value = rescale(igraph::degree(g),2,15),
-           centrality = ifelse(value >= 12,'Highest','Lowest'))
+           centrality = ifelse(value == max(value),'Highest','Lowest'))
 
 visNetwork::visNetwork(nodes,edges) %>% 
     visNodes(
@@ -150,6 +147,12 @@ visNetwork::visNetwork(nodes,edges) %>%
     )%>% 
     visInteraction(navigationButtons = TRUE) %>% 
     visOptions(highlightNearest = T,selectedBy = 'centrality')
+
+
+
+
+
+
 ```
 
 
@@ -165,7 +168,7 @@ Closeness is the sum of the length of the shortest paths between the node and al
 
 nodes <- nodes %>% 
     mutate(value = rescale(igraph::closeness(g),2,15),
-           centrality = ifelse(value <= 5,'Highest','Lowest'))
+           centrality = ifelse(value == max(value),'Highest','Lowest'))
 
 visNetwork::visNetwork(nodes,edges) %>% 
     visNodes(
@@ -179,6 +182,8 @@ visNetwork::visNetwork(nodes,edges) %>%
     )%>% 
     visInteraction(navigationButtons = TRUE) %>% 
     visOptions(highlightNearest = T,selectedBy = 'centrality')
+
+
 ```
 
 
@@ -193,9 +198,10 @@ The betweenness centrality for each vertex is the number of these shortest paths
 
 ```{r,echo=FALSE,message=FALSE,results='asis'}
 
+
 nodes <- nodes %>% 
     mutate(value = rescale(igraph::betweenness(g),2,15),
-           centrality = ifelse(value >= 12,'Highest','Lowest'))
+           centrality = ifelse(value == min(value),'Lowest','Highest'))
 
 visNetwork::visNetwork(nodes,edges) %>% 
     visNodes(
@@ -209,6 +215,9 @@ visNetwork::visNetwork(nodes,edges) %>%
     )%>% 
     visInteraction(navigationButtons = TRUE) %>% 
     visOptions(highlightNearest = T,selectedBy = 'centrality')
+
+
+
 ```
 
 
